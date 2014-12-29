@@ -242,6 +242,9 @@ gulp.task 'build', [
 ]
 
 gulp.task 'deploy', ['build'], () ->
-    gulp.src './dist/**/*'
-       .pipe $.ghPages()
+	gulp.src './dist/**/*'
+		.pipe $.ghPages
+			remoteUrl: 'https://github.com/codoshop/codoshop.github.io.git'
+			branch: 'master'
+
 

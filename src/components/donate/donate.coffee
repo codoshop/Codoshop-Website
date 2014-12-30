@@ -3,9 +3,9 @@
 angular
 	.module 'codoshopDonate', ['angular.filter', 'ngResource']
 	.directive 'donate', ($resource) ->
-		controller: ($scope) ->
+		controller: ($scope) -> do ($s = $scope) ->
 
-			$scope.donList = [
+			$s.donList = [
 				label: 'windows support'
 				progress: 22
 			,
@@ -17,25 +17,35 @@ angular
 			]
 
 
-			$scope.custom = [{},{}]
+			$s.custom = [{},{}]
 
-			$scope.amounts = new WeakMap()
+			$s.amounts = new WeakMap()
 
-			$scope.getters = do (wm = $scope.amounts) -> (k) ->
-					(arg) -> do (v = wm.get(k)) ->
+			$s.getters = do (wm = $s.amounts) -> (k, type) ->
+					(arg) -> do (v = wm.get(k) ? {}) ->
 						if not arg
-							return v ? 0
+							return v[type] ? 0
 						else
-							wm.set k, arg
+							v[type] = arg
+							wm.set k, v
 						return
-			$scope.total = do (wm = $scope.amounts, s = $scope) -> () -> do (keys = null) ->
-				keys = [].concat s.donList, s.custom
+
+			$s.total = do (wm = $s.amounts, $s) -> (type) -> do (keys = null) ->
+				keys = [].concat $s.donList, $s.custom
+				console.log type
 				keys.reduce (p,k,i,a) ->
-					do (v = wm.get(k)) -> 
-						if v then p + v else p
+					do (v = wm.get(k) ? {}) ->
+						if v[type] then p + v[type] else p
 				, 0
 
-			$scope.paypal = do (s = $scope) -> () -> do (form = $('#codoshop-donation-form')) ->
+			$s.paypal = do ($s) -> (payOpt) -> do (form = null, attr = null) ->
+				if payOpt == 'once'
+					form = $('#codoshop-donation-form')
+					attr = 'value'
+				else
+					form = $('#codoshop-subscription-form')
+					attr = 'a3'
+
 				# $(document).trigger 'coinbase_show_modal', 'eae403700bd7f90f6afdd533d96c1a66'
 				
 				# $resource(url, [paramDefaults], [actions], options);
@@ -60,8 +70,9 @@ angular
 				# r.foo json, (u, putResponseHeaders) ->
 				# 	console.log u
 				# 	return
-				form.children('input[name="amount"]').attr 'value', s.total()
-				$('#codoshop-donation-form').submit()
+
+				form.children('input[name="amount"]').attr attr, $s.total(payOpt)
+				form.submit()
 				return
 
 

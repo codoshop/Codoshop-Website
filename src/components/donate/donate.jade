@@ -3,19 +3,37 @@ div(ng-attr-donate='')
 	header
 		h2 Donate
 
-	div
-		p.cond Donations keep Codoshop alive. You can attach a suggestion to your donation that will help steer me in the direction.
+		div
+			p.cond Your donation will help support this software and the developer.
 
 	//- .divider
 	//- 	div
 	//- 		div
-
+	.codoshop-title-row
+		div
+		h5
+			span One-time Donation
+			br
+			br
+			span.fa.fa-caret-down(style='font-size: 21px;')
+		div
+		h5
+			span Monthly Subscription
+			br
+			br
+			span.fa.fa-caret-down(style='font-size: 21px;')
+		div
+			p.cond(style='padding: 0 10px;') Attach a suggestion to your donation.
 	.codoshop-donate-row(ng-repeat='don in donList', ng-class='{"codoshop-first": $first}')
 		div
-			div $
+			div(style='font-size: 42px') $
+		div.codoshop-donate-input-cell
+			input(ng-model='getters(don, "once")', ng-model-options='{ getterSetter: true }', min='0', type='number', step='any', placeholder='0.0')
 		div
-			input(ng-model='getters(don)', ng-model-options='{ getterSetter: true }', min='0', type='number', step='any', placeholder='0.0')
-		div
+			div
+		div.codoshop-donate-input-cell
+			input(ng-model='getters(don, "sub")', ng-model-options='{ getterSetter: true }', min='0', type='number', step='any', placeholder='0.0')
+		div.codoshop-donate-row-progress-bar
 			//- progressbar
 			div
 				div(ng-style='{width: don.progress + "%"}')
@@ -24,55 +42,17 @@ div(ng-attr-donate='')
 			div
 				div {{don.label}}
 
-	//- .bar(ng-repeat='don in donList', ng-class='{"codoshop-first": $first}')
-	//- 	div
-	//- 		div
-	//- 			div $
-	//- 	div
-	//- 		div
-	//- 			input(ng-model='getters(don)', ng-model-options='{ getterSetter: true }', min='0', type='number', step='any', placeholder='0.0')
-	//- 	div
-	//- 	div
-	//- 		div
-	//- 			div
-	//- 				div
-	//- 					div(ng-style='{width: don.progress + "%"}')
-	//- 						div
-	//- 				div {{don.label}}
 
-	//- .bar
-	//- 	div
-	//- 		div
-	//- 			div $
-	//- 	div
-	//- 		div
-	//- 			input(ng-model='suggestions.custom.amount', ng-model-options='{ getterSetter: true }', type='number', step='any', placeholder='0.0')
-	//- 	div
-	//- 		div
-	//- 			div
-	//- 				div
-	//- 					div(ng-style='{width: 0}')
-	//- 				div > suggest something else?
-
-	//- .bar
-	//- 	div
-	//- 		div
-	//- 			div $
-	//- 	div
-	//- 		div
-	//- 			input(ng-model='amounts | last : 2 | first', type='number', step='any', placeholder='0.0')
-	//- 	div
-	//- 		div
-	//- 			div
-	//- 				div
-	//- 					div(ng-style='{width: 0}')
-	//- 				div no suggestion
 	
-	.codoshop-donate-row(ng-class='{"codoshop-first": $first}')
+	.codoshop-donate-row
 		div
-			div $
+			div total
+		div.codoshop-donate-input-cell
+			div {{total('once') | currency : '' : 2}}
 		div
-			div {{total() | currency : '' : 2}}
+			div
+		div.codoshop-donate-input-cell
+			div {{total('sub') | currency : '' : 2}}
 		div
 			//- progressbar
 			div
@@ -80,26 +60,28 @@ div(ng-attr-donate='')
 					div
 			//- label
 			div
-				div total
+				div
 
-	.codoshop-donate-row(ng-class='{"codoshop-first": $first}')
+	.codoshop-donate-row
 		div
-			div $
+			div pay
 		div
 			div
 				ul
 					li
-						a(href='#', onclick='return false;', ng-click='paypal("pay")')
-							span.fa.fa-paypal
+						a(href='#', onclick='return false;', ng-click='paypal("once")')
+							span.fa.fa-paypal 
 							span paypal
 		div
-			//- progressbar
 			div
-				div(ng-style='{width: 0}')
-					div
-			//- label
+
+		div.codoshop-donate-input-cell
 			div
-				div payment method
+				ul
+					li
+						a(href='#', onclick='return false;', ng-click='paypal("sub")')
+							span.fa.fa-paypal 
+							span paypal
 
 	//- .bar
 	//- 	div
@@ -136,11 +118,28 @@ div(ng-attr-donate='')
 	//- 	input(type='image', src='https://www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif', border='0', name='submit', alt='PayPal - The safer, easier way to pay online!')
 	//- 	img(alt='', border='0', src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif', width='1', height='1')
 
+	div
+
+
+	form#codoshop-subscription-form(action='https://www.paypal.com/cgi-bin/webscr', method='post', target='_blank', style='display: none;')
+		input(type='hidden', name='cmd', value='_xclick-subscriptions')
+		input(type='hidden', name='business', value='zakdances@gmail.com')
+		input(type='hidden', name='lc', value='US')
+		input(type='hidden', name='item_name', value='Support Codoshop')
+		input(type='hidden', name='src', value='1')
+		input(type='hidden', name='a3', value='6.00')
+		input(type='hidden', name='p3', value='1')
+		input(type='hidden', name='t3', value='M')
+		input(type='hidden', name='currency_code', value='USD')
+		input(type='hidden', name='bn', value='PP-SubscriptionsBF:btn_subscribe_LG.gif:NonHosted')
+		input(type='image', src='https://www.paypalobjects.com/en_US/i/btn/btn_subscribe_LG.gif', border='0', name='submit', alt='PayPal - The safer, easier way to pay online!')
+		img(alt='', border='0', src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif', width='1', height='1')
+
 	form#codoshop-donation-form(action='https://www.paypal.com/cgi-bin/webscr', method='post', target='_blank', style='display: none;')
 		input(type='hidden', name='cmd', value='_xclick')
 		input(type='hidden', name='business', value='zakdances@gmail.com')
 		input(type='hidden', name='lc', value='US')
-		input(type='hidden', name='item_name', value='Codoshop donation')
+		input(type='hidden', name='item_name', value='Support for Codoshop')
 		input(type='hidden', name='amount', value='20.00')
 		input(type='hidden', name='currency_code', value='USD')
 		input(type='hidden', name='button_subtype', value='services')
@@ -148,7 +147,7 @@ div(ng-attr-donate='')
 		input(type='image', src='https://www.paypalobjects.com/en_US/i/btn/btn_paynow_LG.gif', border='0', name='submit', alt='PayPal - The safer, easier way to pay online!')
 		img(alt='', border='0', src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif', width='1', height='1')
 
-	div
+	
 
 
 	footer
